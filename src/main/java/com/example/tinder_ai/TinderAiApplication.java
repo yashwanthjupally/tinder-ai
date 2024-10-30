@@ -1,18 +1,28 @@
 package com.example.tinder_ai;
 
+import com.example.tinder_ai.Conversations.ChatMessages;
+import com.example.tinder_ai.Conversations.Conversation;
+import com.example.tinder_ai.Conversations.ConversationRepository;
 import com.example.tinder_ai.Profiles.Gender;
 import com.example.tinder_ai.Profiles.Profile;
-import com.example.tinder_ai.Profiles.profileRepository;
+import com.example.tinder_ai.Profiles.ProfileRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+
 @SpringBootApplication
 public class TinderAiApplication implements CommandLineRunner {
 
 	@Autowired
-	private profileRepository profileRepository;
+	private ProfileRepository profileRepository;
+
+	@Autowired
+	private ConversationRepository conversationRepository;
 
 	public static void main(String[] args) {
 		SpringApplication.run(TinderAiApplication.class, args);
@@ -21,6 +31,10 @@ public class TinderAiApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+
+		profileRepository.deleteAll();
+		conversationRepository.deleteAll();
+
 		Profile profile = new Profile(
 				"1",
 				"Yashwanth",
@@ -33,6 +47,31 @@ public class TinderAiApplication implements CommandLineRunner {
 				"INFP"
 		);
 		profileRepository.save(profile);
+
+		Profile profile2 = new Profile(
+				"2",
+				"Poorna",
+				"Kiea",
+				23,
+				"Korean",
+				Gender.MALE,
+				"Sales Engineer",
+				"pkn2.jpg",
+				"TFPS"
+		);
+		profileRepository.save(profile2);
+
 		profileRepository.findAll().forEach(System.out::println);
+
+		Conversation conversation = new Conversation(
+				"1",
+				profile.id(),
+				List.of(
+						new ChatMessages("Hey", profile.id(), LocalDateTime.now())
+				)
+		);
+
+		conversationRepository.save(conversation);
+		conversationRepository.findAll().forEach(System.out::println);
 	}
 }
