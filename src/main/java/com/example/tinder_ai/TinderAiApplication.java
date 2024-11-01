@@ -1,6 +1,6 @@
 package com.example.tinder_ai;
 
-import com.example.tinder_ai.Conversations.ChatMessages;
+import com.example.tinder_ai.Conversations.ChatMessage;
 import com.example.tinder_ai.Conversations.Conversation;
 import com.example.tinder_ai.Conversations.ConversationRepository;
 import com.example.tinder_ai.Profiles.Gender;
@@ -16,6 +16,7 @@ import java.util.List;
 
 
 @SpringBootApplication
+
 public class TinderAiApplication implements CommandLineRunner {
 
 	@Autowired
@@ -67,7 +68,7 @@ public class TinderAiApplication implements CommandLineRunner {
 				"1",
 				profile.id(),
 				List.of(
-						new ChatMessages("Hey", profile.id(), LocalDateTime.now())
+						new ChatMessage("Hey", profile.id(), LocalDateTime.now())
 				)
 		);
 

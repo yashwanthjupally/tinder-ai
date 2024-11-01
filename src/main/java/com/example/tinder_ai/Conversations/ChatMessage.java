@@ -2,9 +2,9 @@ package com.example.tinder_ai.Conversations;
 
 import java.time.LocalDateTime;
 
-public record ChatMessages(
+public record ChatMessage(
         String messageText,
-        String profileId,
+        String authorId,
         LocalDateTime messageTime
 ) {
 }
