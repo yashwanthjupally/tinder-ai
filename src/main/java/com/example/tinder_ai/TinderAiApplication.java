@@ -6,6 +6,9 @@ import com.example.tinder_ai.Conversations.ConversationRepository;
 import com.example.tinder_ai.Profiles.Gender;
 import com.example.tinder_ai.Profiles.Profile;
 import com.example.tinder_ai.Profiles.ProfileRepository;
+import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.ollama.OllamaChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -25,6 +28,9 @@ public class TinderAiApplication implements CommandLineRunner {
 	@Autowired
 	private ConversationRepository conversationRepository;
 
+	@Autowired
+	private OllamaChatModel ollamaChatModel;
+
 	public static void main(String[] args) {
 		SpringApplication.run(TinderAiApplication.class, args);
 	}
@@ -32,6 +38,10 @@ public class TinderAiApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
+
+		Prompt prompt = new Prompt("Do you know Krrish ?");
+		ChatResponse response = ollamaChatModel.call(prompt);
+		System.out.println(response.getResult().getOutput());
 
 		profileRepository.deleteAll();
 		conversationRepository.deleteAll();

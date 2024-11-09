@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.example</groupId>
-	<artifactId>tinder-ai</artifactId>
+	<artifactId>tinder-AI</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>tinder-ai</name>
 	<description>Backend for Tinder AI app</description>
@@ -90,6 +90,10 @@
 			<snapshots>
 				<enabled>false</enabled>
 			</snapshots>
+		</repository>
+		<repository>
+			<id>ollama-repo</id>
+			<url>https://ollama.com/repository</url>
 		</repository>
 	</repositories>
 

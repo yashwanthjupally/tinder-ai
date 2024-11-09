@@ -6,8 +6,10 @@ services:
       - 'MONGO_INITDB_ROOT_PASSWORD=secret'
       - 'MONGO_INITDB_ROOT_USERNAME=root'
     ports:
-      - '27017'
+      - '27017:27017'
   ollama:
-    image: 'ollama/ollama:latest'
+    image: 'ollama/ollama:latest'  # Ollama container image
+    environment:
+      - 'MODEL_NAME=llama3.2:1b'  # Specify the model version 'llama3.2:1b'
     ports:
-      - '11434'
+      - '11434:11434'
