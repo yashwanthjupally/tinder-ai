@@ -1,20 +1,34 @@
-import React from 'react';
 import { User, MessageCircle } from 'lucide-react';
 import ProfileSelector from './ProfileSelector';
 import MatchesList from './MatchesList';
+import React, { useState } from 'react';
 
 const Main = () => {
-  return (
-    <div className='max-w-md mx-auto p-4'>
-      <nav className='flex justify-between mb-4'>
-        <User />
-        <MessageCircle />
-      </nav>
 
-    {/* <ProfileSelector/> */}
-    <MatchesList/>
-    </div>
-  );
+    const [currentScreen, setCurrentScreen] = useState('profile')
+
+    const renderScreen = () =>{
+        switch (currentScreen) {
+            case 'profile':
+                return <ProfileSelector/>;
+            
+            case 'matches':
+                return <MatchesList/>;
+        }
+
+    }  
+
+    return (
+        <div className='max-w-md mx-auto p-4'>
+            <nav className='flex justify-between mb-4'>
+                <User onClick={() => setCurrentScreen("profile")}/>
+                <MessageCircle onClick={() => setCurrentScreen("matches")} />
+            </nav>
+            {renderScreen()}
+        </div>
+    );
+
+
 }
 
 
