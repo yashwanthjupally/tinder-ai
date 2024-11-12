@@ -1,6 +1,6 @@
 import React from 'react'
 
-const MatchesList = () => {
+const MatchesList = ( {selectMatch} ) => {
   return (
     <div className='rounded-lg shadow-lg p-4'>
         <h1 className='font-bold text-2xl mb-4'>Matches</h1>
@@ -12,7 +12,9 @@ const MatchesList = () => {
             {id: 3, firstName: 'Jessica', lastName: 'Jung', imageUrl: 'http://127.0.0.1:8080/07fb670f-f051-43d2-a0e7-227ae8ba2fa4.jpg'}
           ].map(match => (
             <li key={match.id} className='mb-3'>
-              <button className='w-full rounded flex items-center hover:bg-gray-100 '>
+              <button 
+                className='w-full rounded flex items-center hover:bg-gray-100'
+                onClick={selectMatch}>
               <img src={match.imageUrl} className='w-16 h-16 rounded-full mr-3 object-cover'/>
               <span>
                 <h3 className='text-xl font-medium'>{match.firstName} {match.lastName}</h3>

@@ -14,7 +14,7 @@ const Main = () => {
                 return <ProfileSelector/>;
             
             case 'matches':
-                return <MatchesList/>;
+                return <MatchesList selectMatch={() => setCurrentScreen('chat')}/>;
 
             case 'chat':
                 return <ChatScreen/>;
