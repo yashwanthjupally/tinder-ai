@@ -2,6 +2,7 @@ import { User, MessageCircle } from 'lucide-react';
 import ProfileSelector from './ProfileSelector';
 import MatchesList from './MatchesList';
 import React, { useState } from 'react';
+import ChatScreen from './ChatScreen';
 
 const Main = () => {
 
@@ -14,6 +15,9 @@ const Main = () => {
             
             case 'matches':
                 return <MatchesList/>;
+
+            case 'chat':
+                return <ChatScreen/>;
         }
 
     }  
