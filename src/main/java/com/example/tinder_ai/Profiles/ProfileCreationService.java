@@ -3,9 +3,13 @@ package com.example.tinder_ai.Profiles;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang3.StringUtils;
+
+import org.springframework.ai.autoconfigure.ollama.OllamaChatProperties;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
+
 import org.springframework.ai.ollama.OllamaChatModel;
+import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.ai.ollama.api.OllamaOptions;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -26,8 +30,6 @@ import java.util.function.Function;
 
 import static com.example.tinder_ai.Utils.generateMyersBriggsTypes;
 import static com.example.tinder_ai.Utils.selfieTypes;
-
-
 
 @Service
 public class ProfileCreationService {
@@ -56,8 +58,8 @@ public class ProfileCreationService {
     private ProfileRepository profileRepository;
 
 
-    public ProfileCreationService(OllamaChatModel chatClient, ProfileRepository profileRepository) {
-        this.chatModel = chatClient;
+    public ProfileCreationService(OllamaChatModel chatModel, ProfileRepository profileRepository) {
+        this.chatModel = chatModel;
         this.profileRepository = profileRepository;
         this.httpClient = HttpClient.newHttpClient();
         this.stableDiffusionRequestBuilder = HttpRequest.newBuilder()
@@ -90,7 +92,7 @@ public class ProfileCreationService {
             String ethnicity = getRandomElement(ethnicities);
             String personalityType = getRandomElement(myersBriggsPersonalityTypes);
 
-            String prompt = "Create a Tinder profile persona of an " + personalityType + " " + +age + " year old " + ethnicity + " " + gender + " "
+            String prompt = "Create a Tinder profile persona of an " + personalityType + " " + + age + " year old " + ethnicity + " " + gender + " "
                     + " including the first name, last name, Myers Briggs Personality type and a tinder bio. Save the profile using the saveProfile function";
             System.out.println(prompt);
             //      Make a call to OpenAI to generate a sample Tinder profile for these variables
@@ -109,13 +111,12 @@ public class ProfileCreationService {
             Gson gson = new Gson();
             List<Profile> existingProfiles = gson.fromJson(
                     new FileReader(PROFILES_FILE_PATH),
-                    new TypeToken<ArrayList<Profile>>() {
-                    }.getType()
+                    new TypeToken<ArrayList<Profile>>() {}.getType()
             );
             generatedProfiles.addAll(existingProfiles);
             List<Profile> profilesWithImages = new ArrayList<>();
             for (Profile profile : generatedProfiles) {
-                if (profile.imageURL() == null || "".equals(profile.imageURL())) {
+                if (profile.imageUrl() == null || "".equals(profile.imageUrl())) {
                     profile = generateProfileImage(profile);
                 }
                 profilesWithImages.add(profile);
@@ -146,8 +147,7 @@ public class ProfileCreationService {
 
         String prompt = STR."Selfie of a \{profile.age()} year old \{profile.myersBriggsPersonalityType()} \{profile.ethnicity()} \{profile.gender()}, \{randomSelfieType}, photorealistic skin texture and details, individual hairs and pores visible, highly detailed, photorealistic, hyperrealistic, subsurface scattering, 4k DSLR, ultrarealistic, best quality, masterpiece. Bio- \{profile.bio()}";
         String negativePrompt = "multiple faces, lowres, text, error, cropped, worst quality, low quality, jpeg artifacts, ugly, duplicate, morbid, mutilated, out of frame, extra fingers, mutated hands, poorly drawn hands, poorly drawn face, mutation, deformed, blurry, dehydrated, bad anatomy, bad proportions, extra limbs, cloned face, disfigured, gross proportions, malformed limbs, missing arms, missing legs, extra arms, extra legs, fused fingers, too many fingers, long neck, username, watermark, signature";
-        String jsonString = STR.
-                """
+        String jsonString = STR."""
         { "prompt": "\{prompt}", "negative_prompt": "\{negativePrompt}", "steps":40 }
         """;
         System.out.println(STR."Creating image for \{profile.firstName()} \{profile.lastName()}(\{profile.ethnicity()})");
@@ -164,8 +164,7 @@ public class ProfileCreationService {
         }
 
         // Save the generated image in the resources folder
-        record ImageResponse(List<String> images) {
-        }
+        record ImageResponse(List<String> images) {}
 
         Gson gson = new Gson();
         ImageResponse imageResponse = gson.fromJson(response.body(), ImageResponse.class);
@@ -175,7 +174,7 @@ public class ProfileCreationService {
             // Decode Base64 to binary
             byte[] imageBytes = Base64.getDecoder().decode(base64Image);
             String directoryPath = "src/main/resources/static/images/";
-            String filePath = directoryPath + profile.imageURL();
+            String filePath = directoryPath + profile.imageUrl();
             Path directory = Paths.get(directoryPath);
             if (!Files.exists(directory)) {
                 try {
@@ -194,6 +193,8 @@ public class ProfileCreationService {
         return profile;
 
         // Link the image name to the profile's image URL field
+
+
 
 
     }
@@ -216,8 +217,7 @@ public class ProfileCreationService {
         try {
             List<Profile> existingProfiles = gson.fromJson(
                     new FileReader(PROFILES_FILE_PATH),
-                    new TypeToken<ArrayList<Profile>>() {
-                    }.getType()
+                    new TypeToken<ArrayList<Profile>>() {}.getType()
             );
             profileRepository.deleteAll();
             profileRepository.saveAll(existingProfiles);

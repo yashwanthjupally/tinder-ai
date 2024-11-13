@@ -8,7 +8,7 @@ public record Profile(
         String ethnicity,
         Gender gender,
         String bio,
-        String imageURL,
+        String imageUrl,
         String myersBriggsPersonalityType
 ) {
 
