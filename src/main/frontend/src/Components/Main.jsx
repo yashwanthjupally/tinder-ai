@@ -6,10 +6,6 @@ import ChatScreen from './ChatScreen';
 
 const Main = () => {
 
-    const [currentScreen, setCurrentScreen] = useState('profile');
-    const [currentProfile, setCurrentProfile] = useState(null);
-
-    
     const fetchRandomProfile = async () => {
         const response = await fetch('http://localhost:8080/profiles/random');
         if (!response.ok) {
@@ -17,6 +13,24 @@ const Main = () => {
         }
         return response.json();
     };
+
+   const saveSwipe = async (profileId) => {
+        const response = await fetch('http://localhost:8080/matches', {
+            method: 'POST',
+            headers: {
+                'content-Type': 'application/json'
+            },
+            body: JSON.stringify({profileId})
+        });
+        if (!response.ok) {
+            throw new Error("Failed to save profile");
+        }
+   }
+
+
+
+    const [currentScreen, setCurrentScreen] = useState('profile');
+    const [currentProfile, setCurrentProfile] = useState(null);
 
     const loadRandomProfile = async() => {
         try {
@@ -33,10 +47,19 @@ const Main = () => {
     }, []);
 
 
+
+    const onSwipe = (profileId, direction) => {
+        if(direction === "right"){
+            saveSwipe(profileId); 
+        }
+        loadRandomProfile();
+    }
+ 
+
     const renderScreen = () =>{
         switch (currentScreen) {
             case 'profile':
-                return <ProfileSelector profile={currentProfile}/>;     
+                return <ProfileSelector profile={currentProfile} onSwipe={onSwipe}/>;     
             case 'matches':
                 return <MatchesList selectMatch={() => setCurrentScreen('chat')}/>;
             case 'chat':
