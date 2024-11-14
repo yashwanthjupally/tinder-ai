@@ -14,7 +14,7 @@ const Main = () => {
         return response.json();
     };
 
-   const saveSwipe = async (profileId) => {
+    const saveSwipe = async (profileId) => {
         const response = await fetch('http://localhost:8080/matches', {
             method: 'POST',
             headers: {
@@ -27,10 +27,29 @@ const Main = () => {
         }
    }
 
+    const fetchMatches = async () => {
+        const response = await fetch('http://localhost:8080/matches');
+        if (!response.ok) {
+            throw new Error("Failed to fetch profile");
+        }
+        return response.json();
+    };
+
+    const fetchConversation = async (conversationId) => {
+        console.log(conversationId)
+        const response = await fetch(`http://localhost:8080/conversations/${conversationId}`);
+        if(!response.ok){
+            throw new Error("Failed to fetch conversation");
+        }
+        return response.json();
+        
+    }
 
 
     const [currentScreen, setCurrentScreen] = useState('profile');
     const [currentProfile, setCurrentProfile] = useState(null);
+    const [matches, setMatches] = useState([]); 
+    const [currentMatchAndConversation, setCurrentMatchAndConversation] = useState({match: {}, conversation: []});
 
     const loadRandomProfile = async() => {
         try {
@@ -42,28 +61,48 @@ const Main = () => {
         }
     };
 
+    const onSwipe = async (profileId, direction) => {
+        loadRandomProfile();
+        if(direction === "right"){
+            await saveSwipe(profileId); 
+            await loadMatches();
+        }
+     
+    }
+
+    const loadMatches = async() => {
+        try {
+            const matches = await fetchMatches();
+            console.log("Fetched Matches:", matches);
+            setMatches(matches)
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+    const onSelectMatch = async (profile, conversationId) => {
+        const conversation = await fetchConversation(conversationId);
+        setCurrentMatchAndConversation({match: profile, conversation: conversation.messages});
+        setCurrentScreen('chat')
+    }
+
+
+
     useEffect(() => {
         loadRandomProfile();
+        loadMatches();
     }, []);
 
-
-
-    const onSwipe = (profileId, direction) => {
-        if(direction === "right"){
-            saveSwipe(profileId); 
-        }
-        loadRandomProfile();
-    }
- 
 
     const renderScreen = () =>{
         switch (currentScreen) {
             case 'profile':
                 return <ProfileSelector profile={currentProfile} onSwipe={onSwipe}/>;     
             case 'matches':
-                return <MatchesList selectMatch={() => setCurrentScreen('chat')}/>;
+                return <MatchesList matches={matches} onSelectMatch={onSelectMatch}/>;
             case 'chat':
-                return <ChatScreen/>;
+                console.log(currentMatchAndConversation)
+                return <ChatScreen currentMatch={currentMatchAndConversation.match} conversation={currentMatchAndConversation.conversation}/>;
             default:
                 return null;
         }
