@@ -4,47 +4,53 @@ import MatchesList from './MatchesList';
 import React, { useState, useEffect } from 'react';
 import ChatScreen from './ChatScreen';
 
+
+const fetchRandomProfile = async () => {
+    const response = await fetch('http://localhost:8080/profiles/random');
+    if (!response.ok) {
+        throw new Error("Failed to fetch profile");
+    }
+    return response.json();
+};
+
+const saveSwipe = async (profileId) => {
+    const response = await fetch('http://localhost:8080/matches', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({profileId})
+    });
+    if (!response.ok) {
+        throw new Error("Failed to save profile");
+    }
+}
+
+const fetchMatches = async () => {
+    const response = await fetch('http://localhost:8080/matches');
+    if (!response.ok) {
+        throw new Error("Failed to fetch profile");
+    }
+    return response.json();
+};
+
+const fetchConversation = async (conversationId) => {
+    console.log(conversationId)
+    const response = await fetch(`http://localhost:8080/conversations/${conversationId}`);
+    if(!response.ok){
+        throw new Error("Failed to fetch conversation");
+    }
+    return response.json();
+    
+}
+
+
 const Main = () => {
 
-    const fetchRandomProfile = async () => {
-        const response = await fetch('http://localhost:8080/profiles/random');
-        if (!response.ok) {
-            throw new Error("Failed to fetch profile");
-        }
-        return response.json();
-    };
-
-    const saveSwipe = async (profileId) => {
-        const response = await fetch('http://localhost:8080/matches', {
-            method: 'POST',
-            headers: {
-                'content-Type': 'application/json'
-            },
-            body: JSON.stringify({profileId})
-        });
-        if (!response.ok) {
-            throw new Error("Failed to save profile");
-        }
-   }
-
-    const fetchMatches = async () => {
-        const response = await fetch('http://localhost:8080/matches');
-        if (!response.ok) {
-            throw new Error("Failed to fetch profile");
-        }
-        return response.json();
-    };
-
-    const fetchConversation = async (conversationId) => {
-        console.log(conversationId)
-        const response = await fetch(`http://localhost:8080/conversations/${conversationId}`);
-        if(!response.ok){
-            throw new Error("Failed to fetch conversation");
-        }
-        return response.json();
-        
-    }
-
+    useEffect(() => {
+        loadRandomProfile();
+        loadMatches();
+    }, []);
 
     const [currentScreen, setCurrentScreen] = useState('profile');
     const [currentProfile, setCurrentProfile] = useState(null);
@@ -67,7 +73,6 @@ const Main = () => {
             await saveSwipe(profileId); 
             await loadMatches();
         }
-     
     }
 
     const loadMatches = async() => {
@@ -82,29 +87,34 @@ const Main = () => {
 
     const onSelectMatch = async (profile, conversationId) => {
         const conversation = await fetchConversation(conversationId);
-        setCurrentMatchAndConversation({match: profile, conversation: conversation.messages});
+        setCurrentMatchAndConversation({match: profile, conversation: conversation});
         setCurrentScreen('chat')
     }
 
-
-
-    useEffect(() => {
-        loadRandomProfile();
-        loadMatches();
-    }, []);
+    const refreshChatState = async () => {
+        const conversation = await fetchConversation(currentMatchAndConversation.conversation.id);
+        setCurrentMatchAndConversation({match: currentMatchAndConversation.match, conversation: conversation});
+      }
 
 
     const renderScreen = () =>{
         switch (currentScreen) {
             case 'profile':
-                return <ProfileSelector profile={currentProfile} onSwipe={onSwipe}/>;     
+                return < ProfileSelector
+                    profile={currentProfile} 
+                    onSwipe={onSwipe}/>;     
             case 'matches':
-                return <MatchesList matches={matches} onSelectMatch={onSelectMatch}/>;
+                return < MatchesList 
+                    matches={matches} 
+                    onSelectMatch={onSelectMatch}/>;
             case 'chat':
                 console.log(currentMatchAndConversation)
-                return <ChatScreen currentMatch={currentMatchAndConversation.match} conversation={currentMatchAndConversation.conversation}/>;
-            default:
-                return null;
+                return < ChatScreen 
+                    currentMatch={currentMatchAndConversation.match} 
+                    conversation={currentMatchAndConversation.conversation}  
+                    refreshState={refreshChatState}
+                />;
+    
         }
     };  
 

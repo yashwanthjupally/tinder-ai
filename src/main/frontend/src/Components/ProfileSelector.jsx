@@ -1,7 +1,7 @@
 import React from 'react'
 import { X, Heart } from 'lucide-react';
 
-   
+
 const ProfileSelector = ({ profile, onSwipe }) => {
 
     if (!profile) return <div>Loading...</div>;  // Display loading message until profile is fetched
@@ -32,7 +32,6 @@ const ProfileSelector = ({ profile, onSwipe }) => {
                     <Heart size={25} /> 
                 </button>
             </div>
-
         </div>
     );
 };
