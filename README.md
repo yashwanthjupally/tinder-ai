@@ -4,7 +4,7 @@ Tinder AI is a full-stack, AI-powered dating application built using Spring Boot
 
 ![GcKiwsvasAgp-cY](https://github.com/user-attachments/assets/b28ab736-8b25-40d6-8501-bd8a28aea654)
 
-(https://x.com/i/status/1857299393038495819)
+[video](https://x.com/i/status/1857299393038495819)
 ## Description
 
 - Users can fetch profiles using swipe similar to Tinder.
